@@ -176,7 +176,6 @@ const LazyComponent = lazy(() =>
         
         .tool-icon:hover {
           filter: drop-shadow(0 0 20px currentColor);
-          transform: translateY(-5px) scale(1.1);
         }
         
         .code-snippet {
@@ -187,6 +186,50 @@ const LazyComponent = lazy(() =>
         
         .recharts-radar-polygon {
           transition: all 0.3s ease;
+        }
+
+        /* Prevent chart flickering */
+        .recharts-surface {
+          will-change: auto;
+        }
+
+        .recharts-polar-angle-axis-tick text,
+        .recharts-polar-angle-axis-tick line {
+          transition: none !important;
+          cursor: pointer !important;
+          pointer-events: auto !important;
+        }
+
+        .recharts-polar-angle-axis-tick:hover text {
+          fill: #8b5cf6 !important;
+          font-weight: 700 !important;
+        }
+
+        /* Disable any default hover effects */
+        .recharts-polar-angle-axis-tick text:hover,
+        .recharts-polar-angle-axis-tick line:hover {
+          animation: none !important;
+          transition: none !important;
+        }
+
+        /* Stabilize radar chart */
+        .recharts-radar {
+          pointer-events: none;
+        }
+
+        .recharts-radar-dot {
+          pointer-events: auto;
+        }
+
+        .chart-container {
+          position: relative;
+          isolation: isolate;
+        }
+
+        /* Tech Stack Container - Prevent clipping of scaled elements */
+        .tech-stack-container {
+          padding-top: 3rem;
+          padding-bottom: 3rem;
         }
       `}</style>
 
@@ -213,43 +256,76 @@ const LazyComponent = lazy(() =>
               className="max-w-3xl mx-auto mb-16 relative"
               onMouseMove={createParticles}
             >
-              {/* Particles */}
-              {particles.map((particle) => (
-                <div
-                  key={particle.id}
-                  className="particle"
-                  style={{
-                    left: particle.x,
-                    top: particle.y,
-                    '--tx': `${(Math.random() - 0.5) * 100}px`,
-                    '--ty': `${(Math.random() - 0.5) * 100}px`,
-                  } as React.CSSProperties}
-                />
-              ))}
+              {/* Chart Container with stabilization */}
+              <div className="chart-container" style={{ willChange: 'auto', contain: 'layout style paint' }}>
+                {/* Particles */}
+                {particles.map((particle) => (
+                  <div
+                    key={particle.id}
+                    className="particle"
+                    style={{
+                      left: particle.x,
+                      top: particle.y,
+                      '--tx': `${(Math.random() - 0.5) * 100}px`,
+                      '--ty': `${(Math.random() - 0.5) * 100}px`,
+                    } as React.CSSProperties}
+                  />
+                ))}
 
-              <ResponsiveContainer width="100%" height={500}>
-                <RadarChart data={skillsData}>
-                  <PolarGrid stroke="#8b5cf6" strokeOpacity={0.3} />
-                  <PolarAngleAxis
-                    dataKey="skill"
-                    tick={{ fill: '#6b7280', fontSize: 14, fontWeight: 600 }}
+                <ResponsiveContainer width="100%" height={500}>
+                  <RadarChart 
+                    data={skillsData}
                     onClick={(data) => {
-                      const skill = skillsData.find(s => s.skill === data.value);
-                      if (skill) setSelectedSkill(skill);
+                      if (data && data.activeLabel) {
+                        const skill = skillsData.find(s => s.skill === data.activeLabel);
+                        if (skill) setSelectedSkill(skill);
+                      }
                     }}
-                    style={{ cursor: 'pointer' }}
-                  />
-                  <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: '#9ca3af' }} />
-                  <Radar
-                    name="Proficiency"
-                    dataKey="proficiency"
-                    stroke="#8b5cf6"
-                    fill="#8b5cf6"
-                    fillOpacity={0.6}
-                    strokeWidth={2}
-                  />
-                </RadarChart>
-              </ResponsiveContainer>
+                  >
+                    <PolarGrid stroke="#8b5cf6" strokeOpacity={0.3} />
+                    <PolarAngleAxis
+                      dataKey="skill"
+                      tick={false}
+                      axisLine={false}
+                    />
+                    <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: '#9ca3af' }} />
+                    <Radar
+                      name="Proficiency"
+                      dataKey="proficiency"
+                      stroke="#8b5cf6"
+                      fill="#8b5cf6"
+                      fillOpacity={0.6}
+                      strokeWidth={2}
+                    />
+                  </RadarChart>
+                </ResponsiveContainer>
+
+                {/* Custom Skill Labels */}
+                <div className="absolute inset-0 pointer-events-none">
+                  {skillsData.map((skill, index) => {
+                    const angle = (index * 360) / skillsData.length - 90; // Start from top
+                    const radius = 220; // Distance from center
+                    const x = Math.cos((angle * Math.PI) / 180) * radius;
+                    const y = Math.sin((angle * Math.PI) / 180) * radius;
+                    
+                    return (
+                      <div
+                        key={skill.skill}
+                        className="absolute transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer select-none"
+                        style={{
+                          left: `calc(50% + ${x}px)`,
+                          top: `calc(50% + ${y}px)`,
+                        }}
+                        onClick={() => setSelectedSkill(skill)}
+                      >
+                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200 whitespace-nowrap">
+                          {skill.skill}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
 
               <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
                 💡 Click on any skill name to view code examples
@@ -268,14 +344,18 @@ const LazyComponent = lazy(() =>
               </h3>
               
               <div className="relative overflow-hidden">
-                <div className="flex gap-8 overflow-x-auto pb-6 px-4 scrollbar-hide">
+                <div className="flex gap-12 overflow-x-auto pb-16 px-12 scrollbar-hide tech-stack-container">
                   {tools.map((tool, index) => (
                     <motion.div
                       key={tool.name}
                       initial={{ opacity: 0, scale: 0 }}
                       animate={inView ? { opacity: 1, scale: 1 } : {}}
                       transition={{ delay: 0.5 + index * 0.05, type: 'spring', stiffness: 200 }}
-                      whileHover={{ y: -10, scale: 1.1 }}
+                      whileHover={{ 
+                        y: -10, 
+                        scale: 1.1,
+                        transition: { type: "spring", stiffness: 300, damping: 20 }
+                      }}
                       className="flex-shrink-0 flex flex-col items-center gap-3 group"
                     >
                       <div
@@ -292,7 +372,7 @@ const LazyComponent = lazy(() =>
                 </div>
                 
                 {/* Scroll Hint */}
-                <div className="absolute right-0 top-0 bottom-6 w-20 bg-gradient-to-l from-white dark:from-gray-900 to-transparent pointer-events-none" />
+                <div className="absolute right-0 top-12 bottom-12 w-20 bg-gradient-to-l from-white dark:from-gray-900 to-transparent pointer-events-none" />
               </div>
             </motion.div>
           </motion.div>

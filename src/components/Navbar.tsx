@@ -4,6 +4,16 @@ import { Link } from 'react-router-dom';
 export const Navbar = () => {
   const navItems = ['Home', 'About', 'Skills', 'Experience', 'Projects', 'Contact'];
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId.toLowerCase());
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }
+  };
+
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -22,12 +32,12 @@ export const Navbar = () => {
           <ul className="hidden md:flex gap-8">
             {navItems.map((item) => (
               <li key={item}>
-                <a
-                  href={`#${item.toLowerCase()}`}
+                <button
+                  onClick={() => scrollToSection(item.toLowerCase())}
                   className="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors duration-200 font-medium"
                 >
                   {item}
-                </a>
+                </button>
               </li>
             ))}
           </ul>
