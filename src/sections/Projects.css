@@ -1,0 +1,63 @@
+/* Masonry Grid Styles */
+.masonry-grid {
+  display: flex;
+  margin-left: -24px; /* gutter size offset */
+  width: auto;
+}
+
+.masonry-grid-column {
+  padding-left: 24px; /* gutter size */
+  background-clip: padding-box;
+}
+
+.masonry-grid-column > div {
+  margin-bottom: 24px;
+}
+
+/* Smooth transitions for filter changes */
+.masonry-grid-column > div {
+  transition: all 0.3s ease;
+}
+
+/* Line clamp utility for description text */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Custom scrollbar for modal iframe */
+iframe::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+iframe::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+iframe::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 4px;
+}
+
+iframe::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.7);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .masonry-grid {
+    margin-left: -16px;
+  }
+  
+  .masonry-grid-column {
+    padding-left: 16px;
+  }
+  
+  .masonry-grid-column > div {
+    margin-bottom: 16px;
+  }
+}

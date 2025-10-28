@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" class="light">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Full-Stack Developer Portfolio - React, TypeScript, Node.js expert specializing in modern web applications" />
+    <meta name="keywords" content="portfolio, web developer, react, typescript, full-stack, frontend, backend" />
+    <meta name="author" content="Your Name" />
+    <meta name="theme-color" content="#ffffff" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Portfolio - Full-Stack Developer" />
+    <meta property="og:description" content="Explore my work in modern web development" />
+    <meta property="og:image" content="/og-image.jpg" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Portfolio - Full-Stack Developer" />
+    <meta name="twitter:description" content="Explore my work in modern web development" />
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    
+    <!-- DNS Prefetch -->
+    <link rel="dns-prefetch" href="https://unpkg.com" />
+    
+    <!-- Preload critical assets -->
+    <link rel="preload" as="style" href="/src/index.css" />
+    
+    <title>Portfolio - Full-Stack Developer</title>
+    
+    <!-- Inline critical CSS to prevent FOUC -->
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+      #root {
+        min-height: 100vh;
+      }
+      /* Prevent flash of unstyled content */
+      .dark {
+        color-scheme: dark;
+      }
+      .light {
+        color-scheme: light;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
